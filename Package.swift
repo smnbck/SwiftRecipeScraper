@@ -38,7 +38,7 @@ let package = Package(
             dependencies: ["SwiftRecipeScraper"],
             path: "Tests/SwiftRecipeScraperTests",
             resources: [
-                .process("Fixtures"),
+                .process("Fixtures")
             ]
         ),
     ]

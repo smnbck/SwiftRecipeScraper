@@ -2,17 +2,17 @@ import Foundation
 import SwiftRecipeScraper
 
 @main
-struct SwiftRecipeScraperCLI {
+enum SwiftRecipeScraperCLI {
     static func main() async {
         do {
-            let args = CommandLine.arguments.dropFirst()
-            guard let urlString = args.first else {
-                fputs("Usage: swift-recipe-scrape <url>\n", stderr)
-                exit(2)
+            let args = Array(CommandLine.arguments.dropFirst())
+            if args.isEmpty || args.contains("--help") || args.contains("-h") {
+                printHelp()
+                return
             }
-            guard let url = URL(string: String(urlString)) else {
-                fputs("Invalid URL: \(urlString)\n", stderr)
-                exit(2)
+
+            guard let url = URL(string: args[0]), url.scheme != nil else {
+                throw CLIError.invalidURL(args[0])
             }
 
             let client = SwiftRecipeScraperClient()
@@ -24,8 +24,33 @@ struct SwiftRecipeScraperCLI {
             FileHandle.standardOutput.write(data)
             FileHandle.standardOutput.write(Data("\n".utf8))
         } catch {
-            fputs("Error: \(String(describing: error))\n", stderr)
+            FileHandle.standardError.write(Data("Error: \(error)\n".utf8))
             exit(1)
+        }
+    }
+
+    private static func printHelp() {
+        print(
+            """
+            swift-recipe-scrape
+
+            Usage:
+              swift run swift-recipe-scrape <url>
+
+            Output:
+              Prints a JSON representation of the scraped recipe to stdout.
+            """
+        )
+    }
+}
+
+enum CLIError: Error, CustomStringConvertible {
+    case invalidURL(String)
+
+    var description: String {
+        switch self {
+        case .invalidURL(let s):
+            return "Invalid URL: \(s)"
         }
     }
 }
