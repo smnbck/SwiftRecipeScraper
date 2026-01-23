@@ -1,0 +1,34 @@
+// swift-tools-version: 5.9
+import PackageDescription
+
+let package = Package(
+    name: "SwiftRecipeScraper",
+    platforms: [
+        .macOS(.v12),
+        .iOS(.v15),
+        .tvOS(.v15),
+        .watchOS(.v8),
+    ],
+    products: [
+        .library(
+            name: "SwiftRecipeScraper",
+            targets: ["SwiftRecipeScraper"]
+        ),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "2.11.3"),
+    ],
+    targets: [
+        .target(
+            name: "SwiftRecipeScraper",
+            dependencies: [
+                .product(name: "SwiftSoup", package: "SwiftSoup"),
+            ]
+        ),
+        .testTarget(
+            name: "SwiftRecipeScraperTests",
+            dependencies: ["SwiftRecipeScraper"],
+            path: "Tests/SwiftRecipeScraperTests"
+        ),
+    ]
+)
