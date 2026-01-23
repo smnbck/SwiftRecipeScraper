@@ -1,63 +1,97 @@
 # SwiftRecipeScraper
 
-Native Swift recipe scraping, inspired by the Python `recipe-scrapers` ecosystem.
+SwiftRecipeScraper is a native Swift (SwiftPM) library that extracts structured recipe data from cooking websites.
+
+It focuses on **Schema.org JSON-LD** and provides a small, typed API you can use in apps, CLIs, or backend services.
+
+## Dependencies / Prior art
+
+- **HTML parsing**: Powered by [`SwiftSoup`](https://github.com/scinfu/SwiftSoup)
+- **Inspiration / reference implementation (Python)**: [`hhursev/recipe-scrapers`](https://github.com/hhursev/recipe-scrapers)
 
 ## Features
 
-- Schema.org / JSON-LD (`application/ld+json`) recipe extraction with `@graph` support
-- Site-specific scrapers (example: AllRecipes) with CSS selector fallbacks
-- Async/await networking
-- Codable `Recipe` model
+- Schema.org JSON-LD scraping (supports both single JSON-LD objects and `@graph`)
+- Site-specific overrides (example: AllRecipes)
+- Modern Swift: async/await networking, typed models
 
-## Installation (Swift Package Manager)
+## Installation
 
-Add this package to your project in Xcode (File → Add Packages…) or via `Package.swift`:
+Add the package to your project via Swift Package Manager.
+
+### Option A: Add via `Package.swift` (SwiftPM)
+
+Add the dependency:
 
 ```swift
-.package(url: "https://github.com/<your-org-or-user>/SwiftRecipeScraper.git", from: "0.1.0"),
+dependencies: [
+    .package(url: "https://github.com/smnbck/swift-recipe-scraper.git", from: "0.1.0")
+]
 ```
 
-## Usage (Library)
+Then add the product to your target:
+
+```swift
+targets: [
+    .target(
+        name: "YourTarget",
+        dependencies: [
+            .product(name: "SwiftRecipeScraper", package: "SwiftRecipeScraper")
+        ]
+    )
+]
+```
+
+### Option B: Add via Xcode
+
+- In Xcode: **File → Add Packages…**
+- Paste the repository URL and follow the prompts
+
+## Quick start
 
 ```swift
 import SwiftRecipeScraper
 
 let client = SwiftRecipeScraperClient()
-let recipe = try await client.scrape(url: URL(string: "https://www.allrecipes.com/recipe/...")!)
+let url = URL(string: "https://www.allrecipes.com/recipe/123")!
+let recipe = try await client.scrape(url: url)
 print(recipe.title)
-print(recipe.ingredients)
-print(recipe.instructions)
 ```
 
-## Manual Testing (CLI)
+## Manual website testing (CLI)
 
-This repository ships a small CLI for quick smoke-testing against real websites.
-
-### Run
+This package also ships a small CLI executable for quick manual testing:
 
 ```bash
-swift run swift-recipe-scrape "https://www.allrecipes.com/recipe/..."
+swift run swift-recipe-scrape "https://www.allrecipes.com/recipe/123"
 ```
 
-The CLI prints the scraped `Recipe` as pretty-printed JSON to stdout.
+It prints the scraped `Recipe` as pretty-printed JSON to stdout.
 
-### Notes
+## Supported sites
 
-- Be mindful of website terms of service and rate limits.
-- For reproducible tests, prefer saving HTML as fixtures and running unit tests offline.
+- `allrecipes.com` (example implementation; may evolve as AllRecipes changes)
+
+For other sites, the library falls back to the Schema.org JSON-LD scraper when available.
+
+## Notes / limitations
+
+- This project does **not** aim to bypass bot protection or paywalls.
+- Scraping reliability depends on the target site and its structured data quality.
+
+## Extending to new sites
+
+If a site has incomplete or non-standard structured data, add a site-specific scraper and register it (see the `Sites/` and registry code for the AllRecipes example).
 
 ## Testing
+
+Run unit tests:
 
 ```bash
 swift test
 ```
 
-The test suite uses fixture HTML files under `Tests/SwiftRecipeScraperTests/Fixtures`.
+### Fixtures
 
-## Project Structure
-
-- `Sources/SwiftRecipeScraper/` – library code
-- `Sources/SwiftRecipeScraperCLI/` – CLI entry point
-- `Tests/SwiftRecipeScraperTests/` – unit tests + fixtures
-
-
+Tests are primarily offline and use HTML fixtures located under `Tests/SwiftRecipeScraperTests/Fixtures/`.
+This makes parsing tests reproducible and avoids flaky network dependencies.
