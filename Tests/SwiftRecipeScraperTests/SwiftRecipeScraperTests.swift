@@ -24,7 +24,24 @@ final class SwiftRecipeScraperTests: XCTestCase {
     }
 
     func testSchemaOrgScraperSingleObject() throws {
-        let html = try TestFixtures.loadString(named: "schema_single_object")
+        let html = """
+        <html><head></head><body>
+        <script type="application/ld+json">
+        {
+          "@context":"https://schema.org",
+          "@type":"Recipe",
+          "name":"Pancakes",
+          "recipeIngredient":["1 cup flour","1 egg"],
+          "recipeInstructions":[
+            {"@type":"HowToStep","text":"Mix ingredients."},
+            {"@type":"HowToStep","text":"Cook on a pan."}
+          ],
+          "image":"https://example.com/p.jpg",
+          "prepTime":"PT10M"
+        }
+        </script>
+        </body></html>
+        """
 
         let doc = try SwiftSoup.parse(html)
         let scraper = SchemaOrgScraper()
@@ -39,7 +56,19 @@ final class SwiftRecipeScraperTests: XCTestCase {
     }
 
     func testSchemaOrgScraperGraph() throws {
-        let html = try TestFixtures.loadString(named: "schema_graph")
+        let html = """
+        <html><head></head><body>
+        <script type="application/ld+json">
+        {
+          "@context":"https://schema.org",
+          "@graph":[
+            {"@type":"WebPage","name":"Some page"},
+            {"@type":"Recipe","name":"Graph Recipe","recipeIngredient":["a"],"recipeInstructions":"Do it."}
+          ]
+        }
+        </script>
+        </body></html>
+        """
 
         let doc = try SwiftSoup.parse(html)
         let scraper = SchemaOrgScraper()
@@ -50,16 +79,32 @@ final class SwiftRecipeScraperTests: XCTestCase {
         XCTAssertEqual(recipe.instructions, "Do it.")
     }
 
-    func testSchemaOrgScraperSkipsInvalidJSONLDScripts() throws {
-        let html = try TestFixtures.loadString(named: "schema_multiple_scripts_one_invalid")
-
+    func testSchemaOrgScraperSkipsInvalidJSONLDBlocks() throws {
+        let html = try FixtureLoader.loadString("jsonld_multiple_scripts", fileExtension: "html")
         let doc = try SwiftSoup.parse(html)
         let scraper = SchemaOrgScraper()
-        let recipe = try scraper.scrape(document: doc, url: URL(string: "https://example.com/x")!)
+        let recipe = try scraper.scrape(document: doc, url: URL(string: "https://example.com/fixture")!)
 
-        XCTAssertEqual(recipe.title, "Second Script Recipe")
-        XCTAssertEqual(recipe.ingredients, ["x", "y"])
-        XCTAssertEqual(recipe.instructions, "Just do it.")
+        XCTAssertEqual(recipe.title, "Fixture Recipe")
+        XCTAssertEqual(recipe.ingredients, ["a", "b"])
+        XCTAssertEqual(recipe.prepTime, 300)
+        XCTAssertEqual(recipe.imageURL?.absoluteString, "https://example.com/a.jpg")
+        XCTAssertTrue(recipe.instructions.contains("Step 1"))
+        XCTAssertTrue(recipe.instructions.contains("Step 2"))
+    }
+
+    func testSchemaOrgScraperGraphSectionInstructionsAndRelativeImage() throws {
+        let html = try FixtureLoader.loadString("jsonld_graph_instructions_section", fileExtension: "html")
+        let doc = try SwiftSoup.parse(html)
+        let scraper = SchemaOrgScraper()
+        let recipe = try scraper.scrape(document: doc, url: URL(string: "https://example.com/base/path")!)
+
+        XCTAssertEqual(recipe.title, "Graph Fixture")
+        XCTAssertEqual(recipe.ingredients, ["x"])
+        XCTAssertEqual(recipe.prepTime, 3600)
+        XCTAssertEqual(recipe.imageURL?.absoluteString, "https://example.com/relative.jpg")
+        XCTAssertTrue(recipe.instructions.contains("Do A"))
+        XCTAssertTrue(recipe.instructions.contains("Do B"))
     }
 
     func testRegistrySelectsAllRecipesForHost() throws {

@@ -83,7 +83,19 @@ enum SchemaOrgMapper {
             return trimmed.isEmpty ? [] : [trimmed]
 
         case .object(let obj):
-            // HowToStep / HowToSection commonly uses "text"; sometimes "name".
+            // Nested steps: {"itemListElement":[...]}
+            if let nested = obj["itemListElement"]?.arrayValue {
+                let nestedParts = nested.flatMap { instructionParts(from: $0) }
+                if !nestedParts.isEmpty {
+                    // If this is a HowToSection, keep the section name as a header when present.
+                    if let name = obj["name"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines),
+                       !name.isEmpty {
+                        return [name] + nestedParts
+                    }
+                    return nestedParts
+                }
+            }
+            // HowToStep commonly uses "text"; sometimes "name".
             if let text = obj["text"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines),
                !text.isEmpty {
                 return [text]
@@ -91,10 +103,6 @@ enum SchemaOrgMapper {
             if let name = obj["name"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines),
                !name.isEmpty {
                 return [name]
-            }
-            // Nested steps: {"itemListElement":[...]}
-            if let nested = obj["itemListElement"]?.arrayValue {
-                return nested.flatMap { instructionParts(from: $0) }
             }
             return []
 
