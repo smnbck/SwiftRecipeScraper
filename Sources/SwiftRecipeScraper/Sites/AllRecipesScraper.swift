@@ -2,15 +2,15 @@ import Foundation
 import SwiftSoup
 
 /// Example scraper for allrecipes.com showing how to override fields with CSS selectors.
-public final class AllRecipesScraper: BaseScraper {
+final class AllRecipesScraper: BaseScraper {
     private let schemaOrg: SchemaOrgScraper
 
-    public init() {
+    init() {
         self.schemaOrg = SchemaOrgScraper(host: "allrecipes.com")
         super.init(host: "allrecipes.com")
     }
 
-    public override func scrape(document: Document, url: URL) throws -> Recipe {
+    override func scrape(document: Document, url: URL) throws -> Recipe {
         // 1) Prefer Schema.org JSON-LD
         if let recipe = try? schemaOrg.scrape(document: document, url: url) {
             return try overrideFromHTML(recipe: recipe, document: document, url: url)

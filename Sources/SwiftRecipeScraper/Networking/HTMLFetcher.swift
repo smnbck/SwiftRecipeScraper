@@ -1,7 +1,7 @@
 import Foundation
 
-public enum HTMLFetcher {
-    public static func fetchHTML(from url: URL) async throws -> String {
+enum HTMLFetcher {
+    static func fetchHTML(from url: URL) async throws -> String {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue(

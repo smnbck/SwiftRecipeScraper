@@ -1,7 +1,7 @@
 import Foundation
 
-/// A strongly typed representation of arbitrary JSON, avoiding `Any` in public APIs.
-public enum JSONValue: Codable, Equatable, Sendable {
+/// A strongly typed representation of arbitrary JSON, avoiding `Any` in internal parsing.
+enum JSONValue: Codable, Equatable, Sendable {
     case null
     case bool(Bool)
     case number(Double)
@@ -9,7 +9,7 @@ public enum JSONValue: Codable, Equatable, Sendable {
     case array([JSONValue])
     case object([String: JSONValue])
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
         if container.decodeNil() {
@@ -35,7 +35,7 @@ public enum JSONValue: Codable, Equatable, Sendable {
         }
     }
 
-    public func encode(to encoder: Encoder) throws {
+    func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         switch self {
         case .null:

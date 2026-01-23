@@ -1,11 +1,11 @@
 import Foundation
 
 /// Selects the most appropriate scraper for a given URL.
-public struct ScraperRegistry {
+struct ScraperRegistry {
     private var entries: [AnyHostRecipeScraper]
     private var fallback: AnyHostRecipeScraper
 
-    public init(
+    init(
         scrapers: [any RecipeScraper] = [AllRecipesScraper()],
         fallback: any RecipeScraper = SchemaOrgScraper()
     ) {
@@ -14,7 +14,7 @@ public struct ScraperRegistry {
     }
 
     /// Returns a scraper suitable for the URL's host.
-    public func scraper(for url: URL) -> any RecipeScraper {
+    func scraper(for url: URL) -> any RecipeScraper {
         guard let host = url.host?.lowercased(), !host.isEmpty else {
             return fallback.base
         }
