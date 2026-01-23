@@ -14,6 +14,10 @@ let package = Package(
             name: "SwiftRecipeScraper",
             targets: ["SwiftRecipeScraper"]
         ),
+        .executable(
+            name: "swift-recipe-scrape",
+            targets: ["SwiftRecipeScraperCLI"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "2.11.3"),
@@ -25,10 +29,17 @@ let package = Package(
                 .product(name: "SwiftSoup", package: "SwiftSoup"),
             ]
         ),
+        .executableTarget(
+            name: "SwiftRecipeScraperCLI",
+            dependencies: ["SwiftRecipeScraper"]
+        ),
         .testTarget(
             name: "SwiftRecipeScraperTests",
             dependencies: ["SwiftRecipeScraper"],
-            path: "Tests/SwiftRecipeScraperTests"
+            path: "Tests/SwiftRecipeScraperTests",
+            resources: [
+                .process("Fixtures"),
+            ]
         ),
     ]
 )
