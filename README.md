@@ -83,6 +83,16 @@ For other sites, the library falls back to the Schema.org JSON-LD scraper when a
 
 If a site has incomplete or non-standard structured data, add a site-specific scraper and register it (see the `Sites/` and registry code for the AllRecipes example).
 
+## Contributing
+
+Pull requests are welcome!
+
+In particular, contributions that add or improve **site-specific scrapers** are encouraged. If you want to contribute a new scraper, please include:
+
+- A focused implementation under `Sources/SwiftRecipeScraper/Sites/`
+- A small fixture HTML file under `Tests/SwiftRecipeScraperTests/Fixtures/`
+- A unit test that validates the extracted `Recipe` fields
+
 ## Testing
 
 Run unit tests:
@@ -95,3 +105,7 @@ swift test
 
 Tests are primarily offline and use HTML fixtures located under `Tests/SwiftRecipeScraperTests/Fixtures/`.
 This makes parsing tests reproducible and avoids flaky network dependencies.
+
+## License
+
+MIT. See `LICENSE`.
