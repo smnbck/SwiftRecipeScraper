@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/smnbck/swift-recipe-scraper/actions/workflows/ci.yml/badge.svg)](https://github.com/smnbck/swift-recipe-scraper/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Platforms](https://img.shields.io/badge/Platforms-iOS%2015%2B%20%7C%20macOS%2012%2B%20%7C%20tvOS%2015%2B%20%7C%20watchOS%208%2B-blue)](#)
 
 SwiftRecipeScraper is a native Swift (SwiftPM) library that extracts structured recipe data from cooking websites.
 
