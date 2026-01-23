@@ -52,18 +52,22 @@ jobs:
 
           ARCH="$(uname -m)"
           if [[ "$ARCH" == "x86_64" ]]; then
-            TRIPLE="x86_64-apple-ios15.0-simulator"
+            DEST_ARCH="x86_64"
           else
-            TRIPLE="arm64-apple-ios15.0-simulator"
+            DEST_ARCH="arm64"
           fi
 
-          SDKROOT="$(xcrun --sdk iphonesimulator --show-sdk-path)"
-          echo "ARCH=$ARCH"
-          echo "TRIPLE=$TRIPLE"
-          echo "SDKROOT=$SDKROOT"
+          cat > "$RUNNER_TEMP/ios-sim-destination.json" <<JSON
+          {
+            "version": 1,
+            "sdk": "iphonesimulator",
+            "platform": "iOS",
+            "arch": "${DEST_ARCH}"
+          }
+          JSON
 
-          swift build \
-            --product SwiftRecipeScraper \
-            --triple "$TRIPLE" \
-            -Xswiftc -sdk -Xswiftc "$SDKROOT"
+          echo "ARCH=$ARCH"
+          echo "DEST_ARCH=$DEST_ARCH"
+
+          swift build --product SwiftRecipeScraper --destination "$RUNNER_TEMP/ios-sim-destination.json"
 
