@@ -5,8 +5,7 @@ public enum HTMLFetcher {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue(
-            // TODO: Adjust the agent
-            "SwiftRecipeScraper/0.1 (Swift; +https://github.com/)",
+            "SwiftRecipeScraper/0.1.0 (Swift; +https://github.com/smnbck/swift-recipe-scraper)",
             forHTTPHeaderField: "User-Agent"
         )
 
