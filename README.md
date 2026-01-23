@@ -1,13 +1,15 @@
 # SwiftRecipeScraper
 
+[![CI](https://github.com/smnbck/swift-recipe-scraper/actions/workflows/ci.yml/badge.svg)](https://github.com/smnbck/swift-recipe-scraper/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 SwiftRecipeScraper is a native Swift (SwiftPM) library that extracts structured recipe data from cooking websites.
 
-It focuses on **Schema.org JSON-LD** and provides a small, typed API you can use in apps, CLIs, or backend services.
+It focuses on **Schema.org JSON-LD** and provides a small, typed API you can use in apps, CLIs, or backend services. Inspired by the Python [`recipe-scrapers`](https://github.com/hhursev/recipe-scrapers) ecosystem.
 
-## Dependencies / Prior art
+## Dependencies
 
 - **HTML parsing**: Powered by [`SwiftSoup`](https://github.com/scinfu/SwiftSoup)
-- **Inspiration / reference implementation (Python)**: [`hhursev/recipe-scrapers`](https://github.com/hhursev/recipe-scrapers)
 
 ## Features
 
