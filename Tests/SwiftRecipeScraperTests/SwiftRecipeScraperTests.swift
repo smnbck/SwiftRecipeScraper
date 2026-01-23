@@ -24,24 +24,7 @@ final class SwiftRecipeScraperTests: XCTestCase {
     }
 
     func testSchemaOrgScraperSingleObject() throws {
-        let html = """
-        <html><head></head><body>
-        <script type="application/ld+json">
-        {
-          "@context":"https://schema.org",
-          "@type":"Recipe",
-          "name":"Pancakes",
-          "recipeIngredient":["1 cup flour","1 egg"],
-          "recipeInstructions":[
-            {"@type":"HowToStep","text":"Mix ingredients."},
-            {"@type":"HowToStep","text":"Cook on a pan."}
-          ],
-          "image":"https://example.com/p.jpg",
-          "prepTime":"PT10M"
-        }
-        </script>
-        </body></html>
-        """
+        let html = try TestFixtures.loadString(named: "schema_single_object")
 
         let doc = try SwiftSoup.parse(html)
         let scraper = SchemaOrgScraper()
@@ -56,19 +39,7 @@ final class SwiftRecipeScraperTests: XCTestCase {
     }
 
     func testSchemaOrgScraperGraph() throws {
-        let html = """
-        <html><head></head><body>
-        <script type="application/ld+json">
-        {
-          "@context":"https://schema.org",
-          "@graph":[
-            {"@type":"WebPage","name":"Some page"},
-            {"@type":"Recipe","name":"Graph Recipe","recipeIngredient":["a"],"recipeInstructions":"Do it."}
-          ]
-        }
-        </script>
-        </body></html>
-        """
+        let html = try TestFixtures.loadString(named: "schema_graph")
 
         let doc = try SwiftSoup.parse(html)
         let scraper = SchemaOrgScraper()
@@ -77,6 +48,18 @@ final class SwiftRecipeScraperTests: XCTestCase {
         XCTAssertEqual(recipe.title, "Graph Recipe")
         XCTAssertEqual(recipe.ingredients, ["a"])
         XCTAssertEqual(recipe.instructions, "Do it.")
+    }
+
+    func testSchemaOrgScraperSkipsInvalidJSONLDScripts() throws {
+        let html = try TestFixtures.loadString(named: "schema_multiple_scripts_one_invalid")
+
+        let doc = try SwiftSoup.parse(html)
+        let scraper = SchemaOrgScraper()
+        let recipe = try scraper.scrape(document: doc, url: URL(string: "https://example.com/x")!)
+
+        XCTAssertEqual(recipe.title, "Second Script Recipe")
+        XCTAssertEqual(recipe.ingredients, ["x", "y"])
+        XCTAssertEqual(recipe.instructions, "Just do it.")
     }
 
     func testRegistrySelectsAllRecipesForHost() throws {
