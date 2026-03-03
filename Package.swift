@@ -20,7 +20,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "2.11.3"),
+        .package(url: "https://github.com/scinfu/SwiftSoup.git", .exact("2.11.3")),
     ],
     targets: [
         .target(
