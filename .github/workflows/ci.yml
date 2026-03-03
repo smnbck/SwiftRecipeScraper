@@ -47,27 +47,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/clang-module-cache"
-          export CLANG_MODULE_CACHE_PATH="$RUNNER_TEMP/clang-module-cache"
-
-          ARCH="$(uname -m)"
-          if [[ "$ARCH" == "x86_64" ]]; then
-            DEST_ARCH="x86_64"
-          else
-            DEST_ARCH="arm64"
-          fi
-
-          cat > "$RUNNER_TEMP/ios-sim-destination.json" <<JSON
-          {
-            "version": 1,
-            "sdk": "iphonesimulator",
-            "platform": "iOS",
-            "arch": "${DEST_ARCH}"
-          }
-          JSON
-
-          echo "ARCH=$ARCH"
-          echo "DEST_ARCH=$DEST_ARCH"
-
-          swift build --product SwiftRecipeScraper --destination "$RUNNER_TEMP/ios-sim-destination.json"
+          xcodebuild build \
+            -scheme SwiftRecipeScraper \
+            -destination "generic/platform=iOS Simulator" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO
 
