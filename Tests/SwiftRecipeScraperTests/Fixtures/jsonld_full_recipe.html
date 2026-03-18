@@ -1,0 +1,56 @@
+<html>
+  <body>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Recipe",
+        "name": "Full Schema Recipe",
+        "description": "A comprehensive test recipe.",
+        "url": "https://example.com/full-recipe",
+        "image": "https://example.com/cake.jpg",
+        "author": {"@type": "Person", "name": "Chef John"},
+        "datePublished": "2024-03-15",
+        "dateModified": "2024-06-01",
+        "keywords": "cake, easy, birthday",
+        "inLanguage": "en",
+        "prepTime": "PT15M",
+        "cookTime": "PT45M",
+        "totalTime": "PT1H",
+        "recipeYield": "8 servings",
+        "recipeCategory": "Dessert",
+        "recipeCuisine": "American",
+        "cookingMethod": "Baking",
+        "suitableForDiet": "https://schema.org/VegetarianDiet",
+        "recipeIngredient": ["2 cups flour", "1 cup sugar", "3 eggs"],
+        "recipeInstructions": [
+          {"@type": "HowToStep", "text": "Preheat oven to 350F."},
+          {"@type": "HowToStep", "text": "Mix dry ingredients."},
+          {"@type": "HowToStep", "text": "Add eggs and mix well."},
+          {"@type": "HowToStep", "text": "Bake for 45 minutes."}
+        ],
+        "video": {
+          "@type": "VideoObject",
+          "name": "How to make cake",
+          "contentUrl": "https://example.com/cake-video.mp4"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": 4.8,
+          "ratingCount": 250,
+          "bestRating": 5
+        },
+        "nutrition": {
+          "@type": "NutritionInformation",
+          "calories": "350 calories",
+          "fatContent": "12 g",
+          "proteinContent": "5 g",
+          "carbohydrateContent": "55 g"
+        },
+        "tool": [
+          {"@type": "HowToTool", "name": "Mixing Bowl"},
+          {"@type": "HowToTool", "name": "Whisk"}
+        ]
+      }
+    </script>
+  </body>
+</html>

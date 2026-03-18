@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "7689F209-EC59-4D23-B682-19BC11192321",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "SwiftRecipeScraperTests",
+        "name" : "SwiftRecipeScraperTests"
+      }
+    }
+  ],
+  "version" : 1
+}

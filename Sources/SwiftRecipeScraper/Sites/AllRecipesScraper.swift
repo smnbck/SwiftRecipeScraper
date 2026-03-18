@@ -17,28 +17,27 @@ final class AllRecipesScraper: BaseScraper {
         }
 
         // 2) Fallback: CSS-only extraction (best-effort)
-        let title = (try firstText("h1", in: document)) ?? ""
+        let title = try firstText("h1", in: document)
         let ingredients = (try? texts("[data-ingredient-name], .mntl-structured-ingredients__list-item, .ingredients-item-name", in: document)) ?? []
-        let instructionsParts = (try? texts(".comp.mntl-sc-block-group--LI p, .instructions-section-item p, .recipe__steps-content p", in: document)) ?? []
-        let instructions = instructionsParts.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
+        let instructions = (try? texts(".comp.mntl-sc-block-group--LI p, .instructions-section-item p, .recipe__steps-content p", in: document)) ?? []
 
-        let imageURL: URL? = {
-            if let src = try? firstAttr("img", attr: "src", in: document) {
-                return URL(string: src, relativeTo: url)?.absoluteURL
+        let imageURLs: [URL] = {
+            if let src = try? firstAttr("img", attr: "src", in: document),
+               let url = URL(string: src, relativeTo: url)?.absoluteURL {
+                return [url]
             }
-            return nil
+            return []
         }()
 
-        if title.isEmpty, ingredients.isEmpty, instructions.isEmpty {
+        if title == nil, ingredients.isEmpty, instructions.isEmpty {
             throw ScraperError.missingRequiredField("Could not extract recipe from HTML (no JSON-LD, selectors empty).")
         }
 
         return Recipe(
-            title: title.isEmpty ? "Untitled" : title,
+            title: title,
+            imageURLs: imageURLs,
             ingredients: ingredients,
             instructions: instructions,
-            imageURL: imageURL,
-            prepTime: nil,
             host: url.host ?? host
         )
     }
@@ -46,7 +45,7 @@ final class AllRecipesScraper: BaseScraper {
     private func overrideFromHTML(recipe: Recipe, document: Document, url: URL) throws -> Recipe {
         var r = recipe
 
-        if r.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+        if r.title?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty != false,
            let title = try firstText("h1", in: document) {
             r.title = title
         }
@@ -56,15 +55,15 @@ final class AllRecipesScraper: BaseScraper {
             if !ingredients.isEmpty { r.ingredients = ingredients }
         }
 
-        if r.instructions.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        if r.instructions.isEmpty {
             let parts = try texts(".comp.mntl-sc-block-group--LI p, .instructions-section-item p, .recipe__steps-content p", in: document)
-            let joined = parts.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
-            if !joined.isEmpty { r.instructions = joined }
+            if !parts.isEmpty { r.instructions = parts }
         }
 
-        if r.imageURL == nil,
-           let src = try firstAttr("img", attr: "src", in: document) {
-            r.imageURL = URL(string: src, relativeTo: url)?.absoluteURL
+        if r.imageURLs.isEmpty,
+           let src = try firstAttr("img", attr: "src", in: document),
+           let imageURL = URL(string: src, relativeTo: url)?.absoluteURL {
+            r.imageURLs = [imageURL]
         }
 
         if r.host.isEmpty {
