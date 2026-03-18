@@ -20,3 +20,7 @@ xcuserdata/
 *.swiftdoc
 *.swiftmodule
 *.swiftinterface
+
+# Agents
+backlog/
+CLAUDE.md
